@@ -1,0 +1,177 @@
+#include <iostream>
+
+#include <string>
+
+#include <list>
+
+
+
+using namespace std;
+
+
+
+
+
+struct Order {
+
+    string name;
+
+    int number;
+
+    double accuracy;
+
+};
+
+
+
+
+
+int add_order_to_front(list<Order>& l, const Order ord) {
+
+    l.push_front(ord);
+
+
+
+    return 0;
+
+}
+
+
+
+int add_order_to_back(list<Order>& l, const Order ord) {
+
+    l.push_back(ord);
+
+
+
+    return 0;
+
+}
+
+
+
+int add_order_after(list<Order>& l, const string name, const Order ord) {
+
+    for (list<Order>::iterator order = l.begin(); order != l.end(); order++) {
+
+        if (order->name == name) {
+
+            l.insert(next(order), ord);
+
+            return 0;
+
+        }
+
+    }
+
+
+
+    return 1;
+
+}
+
+
+
+int add_order_before(list<Order>& l, const string name, const Order ord) {
+
+    for (list<Order>::iterator order = l.begin(); order != l.end(); order++) {
+
+        if (order->name == name) {
+
+            l.insert(order, ord);
+
+            return 0;
+
+        }
+
+    }
+
+
+
+    return 1;
+
+}
+
+
+
+int delete_order_by_name(list<Order>& l, const string name) {
+
+    for (list<Order>::iterator order = l.begin(); order != l.end(); order++)   {
+
+        if (order->name == name) {
+
+            l.erase(order);
+
+            return 0;
+
+        }
+
+    }
+
+
+
+    return 1;
+
+}
+
+
+
+void print_orders(const list<Order>& l) {
+
+    cout << "--------------------------------------" << endl;
+
+    for (const Order ord : l) {
+
+        cout << "name:" << ord.name << endl;
+
+        cout << "number:" << ord.number << endl;
+
+        cout << "accuracy:" << ord.accuracy << endl;
+
+        cout << endl;
+
+    }
+
+    cout << "--------------------------------------" << endl;
+
+}
+
+
+
+int main()
+
+{
+
+    list<Order> OrderList;
+
+
+
+    add_order_to_front(OrderList, { "Product1", 10, 5.0 });
+
+    add_order_to_back(OrderList, { "Product2", 20, 10.0 });
+
+    add_order_after(OrderList, "Product1", { "Product3", 15, 7.5 });
+
+    add_order_before(OrderList, "Product2", { "Product4", 5, 3.0 });
+
+
+
+    cout << "List after adding elements:" << endl;
+
+    print_orders(OrderList);
+
+
+
+    delete_order_by_name(OrderList, "Product3");
+
+
+
+    cout << "List after deleting element 'Product3'" << endl;
+
+    print_orders(OrderList);
+
+
+
+    return 0;
+
+}
