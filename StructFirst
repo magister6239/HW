@@ -1,177 +1,120 @@
 #include <iostream>
-
 #include <string>
-
-#include <list>
-
-
 
 using namespace std;
 
-
-
-
-
-struct Order {
-
-    string name;
-
-    int number;
-
-    double accuracy;
-
+string fruits[] = {
+        "Apple", "Banana", "Orange", "Pear", "Pineapple",
+        "Mango", "Peach", "Kiwi", "Pomegranate", "Avocado"
 };
 
+struct Order {
+    string name;
+    int cost;
+    double chance;
+    
+    Order* next = nullptr;
+};
 
-
-
-
-int add_order_to_front(list<Order>& l, const Order ord) {
-
-    l.push_front(ord);
-
-
-
-    return 0;
-
+void push_back(Order* head, Order* element) {
+    while (head->next) {
+        head = head->next;
+    }
+    head->next = element;
 }
 
-
-
-int add_order_to_back(list<Order>& l, const Order ord) {
-
-    l.push_back(ord);
-
-
-
-    return 0;
-
+void push_front(Order* &head, Order* element) {
+    element->next = head;
+    head = element;
 }
 
+void push_after(Order* head, unsigned short index, Order* element) {
+    for (unsigned short i = 0; i != index; i++) {
+        head = head->next;
+    }
+    
+    element->next = head->next;
+    head->next = element;
+}
 
+void push_before(Order* head, unsigned short index, Order* element) {
+    Order* previous = nullptr;
+    for (unsigned short i = 0; i != index; i++) {
+        previous = head;
+        head = head->next;
+    }
 
-int add_order_after(list<Order>& l, const string name, const Order ord) {
+    element->next = head;
+    if (previous) previous->next = element;
+}
 
-    for (list<Order>::iterator order = l.begin(); order != l.end(); order++) {
+void remove(Order* &head, int index) {
+    Order* previous = nullptr;
+    Order* current = head;
+    for (unsigned short i = 0; i != index; i++) {
+        previous = head;
+        current = current->next;
+    }
 
-        if (order->name == name) {
+    if (previous) previous->next = current->next;
+    else head = current->next;
 
-            l.insert(next(order), ord);
+    delete current;
+}
 
-            return 0;
-
+void print(Order* head) {
+    while (1) {
+        cout << "name: " << head->name << endl;
+        cout << "cost: " << head->cost << endl;
+        cout << "chance: " << head->chance << endl << endl;
+        if (head->next) {
+            head = head->next;
         }
-
+        else return;
     }
-
-
-
-    return 1;
-
 }
 
+Order* generate_random_order() {
+    int index = rand() % 10;
+    int cost = rand() % 111 + 20;
+    double chance = (rand() % 91 + 10) / 100.0;
 
-
-int add_order_before(list<Order>& l, const string name, const Order ord) {
-
-    for (list<Order>::iterator order = l.begin(); order != l.end(); order++) {
-
-        if (order->name == name) {
-
-            l.insert(order, ord);
-
-            return 0;
-
-        }
-
-    }
-
-
-
-    return 1;
-
+    return new Order{fruits[index], cost, chance};
 }
-
-
-
-int delete_order_by_name(list<Order>& l, const string name) {
-
-    for (list<Order>::iterator order = l.begin(); order != l.end(); order++)   {
-
-        if (order->name == name) {
-
-            l.erase(order);
-
-            return 0;
-
-        }
-
-    }
-
-
-
-    return 1;
-
-}
-
-
-
-void print_orders(const list<Order>& l) {
-
-    cout << "--------------------------------------" << endl;
-
-    for (const Order ord : l) {
-
-        cout << "name:" << ord.name << endl;
-
-        cout << "number:" << ord.number << endl;
-
-        cout << "accuracy:" << ord.accuracy << endl;
-
-        cout << endl;
-
-    }
-
-    cout << "--------------------------------------" << endl;
-
-}
-
-
 
 int main()
-
 {
+    srand(time(nullptr));
 
-    list<Order> OrderList;
+    Order* head = generate_random_order();
+    cout << "One head without any elements" << endl;
+    print(head);
+    cout << "-----------------------------------" << endl;
+    
+    cout << "adding some random elements in the back (5 elements)" << endl;
+    for (unsigned short i = 0; i != 5; i ++) push_back(head, generate_random_order());
+    print(head);
+    cout << "-----------------------------------" << endl;
 
+    cout << "adding some random elements in the front (3 elements)" << endl;
+    for (unsigned short i = 0; i != 3; i++) push_front(head, generate_random_order());
+    print(head);
+    cout << "-----------------------------------" << endl;
 
+    cout << "adding some random elements after the second one (2 elements)" << endl;
+    for (unsigned short i = 0; i != 2; i++) push_after(head, 1, generate_random_order());
+    print(head);
+    cout << "-----------------------------------" << endl;
 
-    add_order_to_front(OrderList, { "Product1", 10, 5.0 });
+    cout << "adding some random elements before the fifth one (2 elements)" << endl;
+    for (unsigned short i = 0; i != 2; i++) push_before(head, 4, generate_random_order());
+    print(head);
+    cout << "-----------------------------------" << endl;
 
-    add_order_to_back(OrderList, { "Product2", 20, 10.0 });
-
-    add_order_after(OrderList, "Product1", { "Product3", 15, 7.5 });
-
-    add_order_before(OrderList, "Product2", { "Product4", 5, 3.0 });
-
-
-
-    cout << "List after adding elements:" << endl;
-
-    print_orders(OrderList);
-
-
-
-    delete_order_by_name(OrderList, "Product3");
-
-
-
-    cout << "List after deleting element 'Product3'" << endl;
-
-    print_orders(OrderList);
-
-
+    cout << "deleting second element" << endl;
+    remove(head, 1);
+    print(head);
+    cout << "-----------------------------------" << endl;
 
     return 0;
-
 }
